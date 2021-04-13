@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:compression="http://www.mulesoft.org/schema/mule/compression" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4cf84620-0fc3-4924-967a-9e9b525e1380" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="9278850f-adc7-4d99-be7b-1cd1eabc645c" >
+		<http:request-connection protocol="HTTPS" host="opendata.ecdc.europa.eu" port="443" />
+	</http:request-config>
+	<flow name="countrywise-covid-data-impl" doc:id="94edf4cf-a3ed-4ed8-bb56-10fc7c54030b" >
+		<http:listener doc:name="Listener" doc:id="d340c8ae-7c24-4562-b3a1-74eb57b1709b" config-ref="HTTP_Listener_config" path="/api/test"/>
+		<http:request method="GET" doc:name="Request" doc:id="b987a77e-7f0e-4dee-aa04-f77f8218ffaa" config-ref="HTTP_Request_configuration" path="/covid19/casedistribution/csv/data.csv" outputMimeType="application/csv"/>
+		<compression:compress doc:name="Compress" doc:id="767f6c9b-9a2c-4b5c-9d93-e1736c0aef4e" >
+			<compression:compressor >
+				<compression:zip-compressor />
+			</compression:compressor>
+		</compression:compress>
+		<logger level="INFO" doc:name="Logger" doc:id="1e0d39ec-7f91-4e1d-8144-f15f717a0be2" />
+	</flow>
+</mule>
